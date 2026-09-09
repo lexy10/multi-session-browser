@@ -11,6 +11,9 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    # prisma validate/generate only need DATABASE_URL to resolve, not a live DB.
+    env:
+      DATABASE_URL: postgresql://user:pass@localhost:5432/db?schema=public
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
