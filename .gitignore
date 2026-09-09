@@ -5,3 +5,13 @@ dist/
 Architecture-and-Spoofing-Overview.pdf
 Multi-Session-Browser-Executive-Overview.pdf
 .idea
+
+# secrets / env
+.env
+.env.*
+!.env.example
+
+# backend build + prisma
+backend/dist/
+backend/generated/
+backend/.env

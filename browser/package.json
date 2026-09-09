@@ -1,0 +1,63 @@
+{
+  "name": "multi-proxy-browser",
+  "productName": "Multi Proxy Browser",
+  "version": "0.1.0",
+  "description": "A multi-session Chromium browser where every tab can have its own proxy/IP identity and HTML5 geolocation.",
+  "main": "src/main/main.js",
+  "author": "villagesquare.io",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "dist:mac": "electron-builder --mac dmg --universal --publish never",
+    "dist:win": "electron-builder --win nsis --x64 --arm64 --publish never",
+    "dist:windir": "electron-builder --win --dir --publish never",
+    "test:proxy": "node scripts/test-decodo.js"
+  },
+  "dependencies": {
+    "proxy-chain": "^2.5.9",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "png-to-ico": "^3.0.2"
+  },
+  "build": {
+    "appId": "io.villagesquare.multiproxybrowser",
+    "productName": "Multi Proxy Browser",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "config.json",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.utilities",
+      "icon": "build/icon.icns",
+      "identity": null
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

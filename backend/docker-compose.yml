@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mpb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mpb
+      POSTGRES_PASSWORD: mpb
+      POSTGRES_DB: mpb
+    ports:
+      # Host 5433 to avoid clashing with a native Postgres on 5432.
+      - "5433:5432"
+    volumes:
+      - mpb_pgdata:/var/lib/postgresql/data
+
+volumes:
+  mpb_pgdata:

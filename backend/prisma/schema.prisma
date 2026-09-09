@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  active       Boolean  @default(true)
+  locked       Boolean  @default(false) // admin can remotely lock this user's app
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  history      History[]
+
+  @@map("users")
+}
+
+/// Per-user browsing history. Soft-deleted (deletedAt) so admins can still see
+/// entries a user removed from their own view.
+model History {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url       String
+  title     String    @default("")
+  visitedAt DateTime  @default(now())
+  deletedAt DateTime? // set = soft-deleted (hidden from the user, visible to admins)
+
+  @@index([userId, visitedAt])
+  @@map("history")
+}
+
+/// Single-row application settings (Decodo config + global controls).
+model AppSetting {
+  id              Int      @id @default(1)
+  // Decodo proxy config — password stored AES-encrypted (see CryptoService).
+  decodoUsername  String   @default("")
+  decodoPasswordEnc String @default("")
+  endpoint        String   @default("gate.decodo.com:7000")
+  sessionDuration Int      @default(30)
+  dataSaver       String   @default("balanced") // off | balanced | aggressive
+  autoCountry     String   @default("") // blank = account default pool
+  autoCity        String   @default("")
+  globalLock      Boolean  @default(false) // lock every client at once
+  updatedAt       DateTime @updatedAt
+
+  @@map("app_settings")
+}

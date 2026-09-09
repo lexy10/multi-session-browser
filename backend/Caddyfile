@@ -1,0 +1,7 @@
+# Automatic HTTPS (Let's Encrypt) for your domain, reverse-proxied to the backend.
+# socket.io / WebSocket upgrades are handled by reverse_proxy automatically.
+# Domain comes from the DOMAIN env var, defaulting to the production domain.
+{$DOMAIN:api.rirsssdaf.link} {
+	encode zstd gzip
+	reverse_proxy backend:3000
+}

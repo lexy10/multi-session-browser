@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mpb-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - mpb_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # No host port published — only the backend (same network) reaches it.
+
+  backend:
+    # CI pushes an image to GHCR and sets BACKEND_IMAGE; a manual `up -d --build`
+    # builds locally and tags it the same. Either path works from this one file.
+    image: ${BACKEND_IMAGE:-mpb-backend:local}
+    build: .
+    container_name: mpb-backend
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3000"   # internal only; Caddy proxies to it
+
+  caddy:
+    image: caddy:2
+    container_name: mpb-caddy
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  mpb_pgdata:
+  caddy_data:
+  caddy_config:

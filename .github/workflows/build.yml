@@ -19,6 +19,9 @@ jobs:
           - os: windows-latest
             script: dist:win
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: browser
     steps:
       - uses: actions/checkout@v4
 
@@ -26,10 +29,11 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: browser/package-lock.json
 
       - run: npm ci
 
-      - name: Build
+      - name: Build installer
         run: npm run ${{ matrix.script }}
 
       - name: Upload artifacts
@@ -37,6 +41,6 @@ jobs:
         with:
           name: ${{ matrix.os }}-installers
           path: |
-            dist/*.dmg
-            dist/*.exe
+            browser/dist/*.dmg
+            browser/dist/*.exe
           if-no-files-found: warn
