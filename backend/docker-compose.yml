@@ -1,17 +1,19 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: mpb-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: mpb
       POSTGRES_PASSWORD: mpb
       POSTGRES_DB: mpb
+      # Match prod: PG18 moved the default data dir; pin it explicitly.
+      PGDATA: /var/lib/postgresql/data
     ports:
       # Host 5433 to avoid clashing with a native Postgres on 5432.
       - "5433:5432"
     volumes:
-      - mpb_pgdata:/var/lib/postgresql/data
+      - mpb_pgdata:/var/lib/postgresql
 
 volumes:
   mpb_pgdata:
