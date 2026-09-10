@@ -472,7 +472,7 @@ async function loadAudit() {
   const { items, total, page, pages } = r.data;
   auditState.pages = pages;
   for (const a of items) {
-    const row = el('div', { class: 'u-item a-item' }, [
+    const row = el('div', { class: 'u-item a-item', title: 'Click for full details', onclick: () => openAuditDetail(a) }, [
       el('span', { class: 'a-badge a-' + auditTone(a.action), text: AUDIT_LABELS[a.action] || a.action }),
       el('div', { class: 'a-main' }, [
         el('div', { class: 'a-detail', text: a.detail || '—' }),
@@ -486,6 +486,32 @@ async function loadAudit() {
   $('#apageinfo').textContent = `Page ${page} of ${pages} · ${total} event${total === 1 ? '' : 's'}`;
   $('#aprev').disabled = page <= 1;
   $('#anext').disabled = page >= pages;
+}
+function auditDetailRow(k, v) {
+  if (v === undefined || v === null || v === '') return null;
+  return el('div', { class: 'ad-row' }, [
+    el('div', { class: 'ad-key', text: k }),
+    el('div', { class: 'ad-val', text: String(v) })
+  ]);
+}
+function openAuditDetail(a) {
+  const body = $('#audit-detail-body');
+  body.innerHTML = '';
+  body.appendChild(el('div', { class: 'ad-badge-row' }, [
+    el('span', { class: 'a-badge a-' + auditTone(a.action), text: AUDIT_LABELS[a.action] || a.action })
+  ]));
+  const rows = [
+    ['When', new Date(a.createdAt).toLocaleString()],
+    ['Actor', a.actorName || 'unknown'],
+    ['Actor ID', a.actorId],
+    ['Target', a.targetType ? (a.targetType + (a.targetId ? ' · ' + a.targetId : '')) : ''],
+    ['IP address', a.ip],
+    ['Detail', a.detail],
+    ['Raw action', a.action],
+    ['Event ID', a.id]
+  ];
+  for (const [k, v] of rows) { const r = auditDetailRow(k, v); if (r) body.appendChild(r); }
+  openModal('#audit-modal');
 }
 
 // ---------- wiring ----------
@@ -546,6 +572,7 @@ function wire() {
   $('#aprev').addEventListener('click', () => { if (auditState.page > 1) { auditState.page--; loadAudit(); } });
   $('#anext').addEventListener('click', () => { if (auditState.page < auditState.pages) { auditState.page++; loadAudit(); } });
   $('#afilter').addEventListener('change', (e) => { auditState.action = e.target.value; auditState.page = 1; loadAudit(); });
+  $('#audit-detail-close').addEventListener('click', () => closeModal('#audit-modal'));
   $('#asearch').addEventListener('input', (e) => {
     clearTimeout(searchTimerA);
     searchTimerA = setTimeout(() => { auditState.q = e.target.value.trim(); auditState.page = 1; loadAudit(); }, 250);

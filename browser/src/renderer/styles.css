@@ -356,6 +356,7 @@ button { font-family: inherit; transition: background .12s ease, border-color .1
 /* history rows (compact) */
 #history-screen { z-index: 160; } /* above the admin console when opened from it */
 #adduser-modal { z-index: 300; } /* above the admin console */
+#audit-modal { z-index: 300; } /* above the admin console */
 .h-item { align-items: center; }
 .h-main { flex: 1; min-width: 0; }
 .h-title { font-weight: 600; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -382,5 +383,14 @@ button { font-family: inherit; transition: background .12s ease, border-color .1
 .a-warn { background: rgba(217,119,6,.14); color: #b45309; border-color: rgba(217,119,6,.30); }
 .a-neutral { background: var(--accent-soft); color: var(--accent-strong); border-color: transparent; }
 :root[data-theme="dark"] .a-warn { color: #fbbf24; }
+.a-item { cursor: pointer; }
+
+/* audit detail modal */
+.ad-badge-row { margin: 4px 0 10px; }
+.audit-detail { display: flex; flex-direction: column; }
+.ad-row { display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.ad-row:last-child { border-bottom: none; }
+.ad-key { flex: 0 0 92px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 700; padding-top: 2px; }
+.ad-val { flex: 1; min-width: 0; font-size: 13px; color: var(--text); line-height: 1.5; word-break: break-word; }
 
 .hidden { display: none !important; }
