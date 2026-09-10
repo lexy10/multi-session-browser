@@ -316,9 +316,22 @@ async function savePwd() {
 }
 
 // -- proxy settings --
+// Shared status pill for Save + Test proxy. state: 'checking' | 'ok' | 'err' | '' (hidden).
+function setSetStatus(state, text) {
+  const el = $('#set-status');
+  el.textContent = '';
+  if (!state) { el.className = 'test-status'; el.hidden = true; return; }
+  el.hidden = false;
+  el.className = 'test-status badge badge-' + state;
+  const icon = document.createElement('span');
+  icon.className = state === 'checking' ? 'badge-spin' : 'dot2';
+  el.appendChild(icon);
+  el.appendChild(document.createTextNode(text));
+}
+
 async function loadSettings() {
   const r = await window.api.admin.getSettings();
-  if (!r.ok) { $('#set-status').textContent = r.error || 'Could not load'; return; }
+  if (!r.ok) { setSetStatus('err', r.error || 'Could not load'); return; }
   const s = r.data;
   $('#set-username').value = s.username || '';
   $('#set-password').value = '';
@@ -329,7 +342,7 @@ async function loadSettings() {
   $('#set-city').value = s.autoCity || '';
   $('#set-datasaver').value = s.dataSaver || 'balanced';
   $('#set-globallock').checked = Boolean(s.globalLock);
-  $('#set-status').textContent = '';
+  setSetStatus('');
 }
 async function saveAdminSettings() {
   const dto = {
@@ -343,22 +356,24 @@ async function saveAdminSettings() {
   };
   const pw = $('#set-password').value;
   if (pw) dto.decodoPassword = pw;
-  $('#set-status').textContent = 'Saving…';
+  setSetStatus('checking', 'Saving…');
   const r = await window.api.admin.updateSettings(dto);
-  if (r.ok) { state.hasProxy = true; $('#set-status').textContent = '✓ Saved'; $('#set-password').value = ''; }
-  else $('#set-status').textContent = '✗ ' + (r.error || 'Save failed');
+  if (r.ok) { state.hasProxy = true; setSetStatus('ok', 'Saved'); $('#set-password').value = ''; }
+  else setSetStatus('err', r.error || 'Save failed');
 }
 async function testProxy() {
-  $('#set-status').textContent = 'Testing…';
+  setSetStatus('checking', 'Testing…');
   const res = await window.api.proxyTest({
     username: $('#set-username').value.trim(),
     password: $('#set-password').value,
     endpoint: $('#set-endpoint').value.trim(),
     country: $('#set-country').value.trim()
   });
-  $('#set-status').textContent = res && res.ok
-    ? `✓ Valid · ${res.ip}${res.country ? ' (' + res.country + ')' : ''}`
-    : `✗ ${(res && res.error) || 'failed'}`;
+  if (res && res.ok) {
+    setSetStatus('ok', `Valid · ${res.ip}${res.country ? ' · ' + res.country : ''}`);
+  } else {
+    setSetStatus('err', (res && res.error) || 'Test failed');
+  }
 }
 
 // ---------- history (full-page) ----------

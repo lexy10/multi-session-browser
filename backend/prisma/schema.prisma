@@ -42,6 +42,23 @@ model History {
   @@map("history")
 }
 
+/// Immutable audit trail of security-relevant actions (logins + admin actions).
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String   // LOGIN_SUCCESS | LOGIN_FAILURE | USER_CREATE | USER_UPDATE | USER_DELETE | SETTINGS_UPDATE | LOCK | UNLOCK | LOCK_ALL | UNLOCK_ALL | FORCE_LOGOUT
+  actorId    String?  // null for anonymous actors (e.g. a failed login)
+  actorName  String   @default("") // username captured at the time
+  targetType String?  // USER | SETTINGS | CLIENTS
+  targetId   String?
+  detail     String   @default("") // short human-readable summary
+  ip         String   @default("")
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@map("audit_logs")
+}
+
 /// Single-row application settings (Decodo config + global controls).
 model AppSetting {
   id              Int      @id @default(1)

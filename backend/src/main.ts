@@ -1,9 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Runs behind Caddy (and Cloudflare); trust the proxy so req.ip / rate-limiting
+  // reflect the real client address from X-Forwarded-For.
+  app.set('trust proxy', 1);
 
   const origins = (process.env.CORS_ORIGINS || '*')
     .split(',')

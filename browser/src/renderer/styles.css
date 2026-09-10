@@ -220,6 +220,11 @@ button { font-family: inherit; transition: background .12s ease, border-color .1
   border: 1px solid transparent; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .badge .dot2 { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+.badge .badge-spin {
+  width: 10px; height: 10px; flex: 0 0 auto; border-radius: 50%;
+  border: 2px solid currentColor; border-top-color: transparent;
+  animation: spin .7s linear infinite;
+}
 .badge-idle { background: var(--surface-3); color: var(--muted); }
 .badge-checking { background: var(--accent-soft); color: var(--accent-strong); }
 .badge-ok { background: rgba(5,150,105,0.14); color: var(--ok); border-color: rgba(5,150,105,0.35); }
