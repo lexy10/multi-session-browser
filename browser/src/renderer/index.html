@@ -125,6 +125,7 @@
       <div class="admin-nav">
         <button class="seg active" id="seg-users" data-section="users">Users</button>
         <button class="seg" id="seg-settings" data-section="settings">Proxy Settings</button>
+        <button class="seg" id="seg-audit" data-section="audit">Audit log</button>
       </div>
       <button id="admin-back" class="pill-btn">← Back to browsing</button>
     </div>
@@ -184,6 +185,38 @@
         <span id="set-status" class="test-status" hidden></span>
         <span class="spacer"></span>
         <button id="admin-save" class="primary-btn" type="button">Save settings</button>
+      </div>
+    </div>
+
+    <!-- Audit log section -->
+    <div id="admin-audit" class="admin-section hidden">
+      <div class="admin-toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="asearch" type="text" placeholder="Search actor, detail, IP…" autocomplete="off" />
+        </div>
+        <select id="afilter" class="audit-filter">
+          <option value="">All actions</option>
+          <option value="LOGIN_SUCCESS">Login success</option>
+          <option value="LOGIN_FAILURE">Login failure</option>
+          <option value="USER_CREATE">User created</option>
+          <option value="USER_UPDATE">User updated</option>
+          <option value="USER_DELETE">User deleted</option>
+          <option value="SETTINGS_UPDATE">Settings updated</option>
+          <option value="LOCK">Lock</option>
+          <option value="UNLOCK">Unlock</option>
+          <option value="LOCK_ALL">Lock all</option>
+          <option value="UNLOCK_ALL">Unlock all</option>
+          <option value="FORCE_LOGOUT">Force logout</option>
+        </select>
+        <span class="spacer"></span>
+        <button id="areload" class="ghost-btn" type="button">Refresh</button>
+      </div>
+      <div class="users-table" id="audit-list"></div>
+      <div class="admin-pager">
+        <button id="aprev" class="mini-btn" type="button">‹ Prev</button>
+        <span id="apageinfo" class="muted"></span>
+        <button id="anext" class="mini-btn" type="button">Next ›</button>
       </div>
     </div>
   </div>

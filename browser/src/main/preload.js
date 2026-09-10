@@ -44,7 +44,8 @@ contextBridge.exposeInMainWorld('api', {
     lockAll: () => ipcRenderer.invoke('admin:control:lockAll'),
     unlockAll: () => ipcRenderer.invoke('admin:control:unlockAll'),
     logoutUser: (id) => ipcRenderer.invoke('admin:control:logoutUser', { id }),
-    userHistory: (userId, params) => ipcRenderer.invoke('admin:history:user', { userId, params })
+    userHistory: (userId, params) => ipcRenderer.invoke('admin:history:user', { userId, params }),
+    audit: (params) => ipcRenderer.invoke('admin:audit:list', params)
   },
 
   // ---- native menus ----

@@ -365,4 +365,22 @@ button { font-family: inherit; transition: background .12s ease, border-color .1
 .h-deleted { opacity: .6; }
 .h-deleted .h-title { text-decoration: line-through; }
 
+/* ---------- Audit log ---------- */
+.audit-filter { flex: 0 0 auto; width: auto; min-width: 150px; }
+.a-item { align-items: center; gap: 12px; }
+.a-main { flex: 1; min-width: 0; }
+.a-detail { font-size: 12.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.a-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.a-time { font-size: 10.5px; color: var(--muted); white-space: nowrap; flex: 0 0 auto; }
+.a-badge {
+  flex: 0 0 auto; font-size: 10px; font-weight: 700; letter-spacing: .02em;
+  padding: 3px 9px; border-radius: 20px; border: 1px solid transparent;
+  min-width: 96px; text-align: center;
+}
+.a-ok { background: rgba(5,150,105,.14); color: var(--ok); border-color: rgba(5,150,105,.30); }
+.a-err { background: rgba(220,38,38,.12); color: var(--danger); border-color: rgba(220,38,38,.30); }
+.a-warn { background: rgba(217,119,6,.14); color: #b45309; border-color: rgba(217,119,6,.30); }
+.a-neutral { background: var(--accent-soft); color: var(--accent-strong); border-color: transparent; }
+:root[data-theme="dark"] .a-warn { color: #fbbf24; }
+
 .hidden { display: none !important; }

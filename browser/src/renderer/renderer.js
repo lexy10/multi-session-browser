@@ -199,7 +199,9 @@ async function createNewTab() {
 
 // ---------- admin console (full-page) ----------
 const adminState = { section: 'users', page: 1, q: '', pages: 1 };
+const auditState = { page: 1, q: '', action: '', pages: 1 };
 let searchTimer = null;
+let searchTimerA = null;
 
 function applyRole() {
   $('#admin-btn').classList.toggle('hidden', !isAdmin());
@@ -219,9 +221,12 @@ function showSection(section) {
   adminState.section = section;
   $('#seg-users').classList.toggle('active', section === 'users');
   $('#seg-settings').classList.toggle('active', section === 'settings');
+  $('#seg-audit').classList.toggle('active', section === 'audit');
   $('#admin-users').classList.toggle('hidden', section !== 'users');
   $('#admin-settings').classList.toggle('hidden', section !== 'settings');
+  $('#admin-audit').classList.toggle('hidden', section !== 'audit');
   if (section === 'users') loadUsers();
+  else if (section === 'audit') loadAudit();
   else loadSettings();
 }
 
@@ -444,6 +449,45 @@ async function clearHist() {
   if (r.ok) { histState.page = 1; loadHistory(); }
 }
 
+// ---------- audit log (admin) ----------
+const AUDIT_LABELS = {
+  LOGIN_SUCCESS: 'Login success', LOGIN_FAILURE: 'Login failure',
+  USER_CREATE: 'User created', USER_UPDATE: 'User updated', USER_DELETE: 'User deleted',
+  SETTINGS_UPDATE: 'Settings updated', LOCK: 'Lock', UNLOCK: 'Unlock',
+  LOCK_ALL: 'Lock all', UNLOCK_ALL: 'Unlock all', FORCE_LOGOUT: 'Force logout'
+};
+function auditTone(action) {
+  if (action === 'LOGIN_SUCCESS') return 'ok';
+  if (action === 'LOGIN_FAILURE' || action === 'USER_DELETE') return 'err';
+  if (action === 'LOCK' || action === 'LOCK_ALL' || action === 'FORCE_LOGOUT') return 'warn';
+  return 'neutral';
+}
+async function loadAudit() {
+  const box = $('#audit-list');
+  const r = await window.api.admin.audit({
+    page: auditState.page, limit: 50, q: auditState.q, action: auditState.action
+  });
+  box.innerHTML = '';
+  if (!r.ok) { box.appendChild(el('div', { class: 'muted ut-empty', text: r.error || 'Could not load audit log' })); return; }
+  const { items, total, page, pages } = r.data;
+  auditState.pages = pages;
+  for (const a of items) {
+    const row = el('div', { class: 'u-item a-item' }, [
+      el('span', { class: 'a-badge a-' + auditTone(a.action), text: AUDIT_LABELS[a.action] || a.action }),
+      el('div', { class: 'a-main' }, [
+        el('div', { class: 'a-detail', text: a.detail || '—' }),
+        el('div', { class: 'a-sub', text: `${a.actorName || 'unknown'}${a.ip ? ' · ' + a.ip : ''}` })
+      ]),
+      el('span', { class: 'a-time', text: new Date(a.createdAt).toLocaleString() })
+    ]);
+    box.appendChild(row);
+  }
+  if (items.length === 0) box.appendChild(el('div', { class: 'muted ut-empty', text: 'No audit entries yet.' }));
+  $('#apageinfo').textContent = `Page ${page} of ${pages} · ${total} event${total === 1 ? '' : 's'}`;
+  $('#aprev').disabled = page <= 1;
+  $('#anext').disabled = page >= pages;
+}
+
 // ---------- wiring ----------
 function wire() {
   $('#new-tab-btn').addEventListener('click', openNewTab);
@@ -484,6 +528,7 @@ function wire() {
   $('#admin-back').addEventListener('click', closeAdmin);
   $('#seg-users').addEventListener('click', () => showSection('users'));
   $('#seg-settings').addEventListener('click', () => showSection('settings'));
+  $('#seg-audit').addEventListener('click', () => showSection('audit'));
   $('#ureload').addEventListener('click', loadUsers);
   $('#uprev').addEventListener('click', () => { if (adminState.page > 1) { adminState.page--; loadUsers(); } });
   $('#unext').addEventListener('click', () => { if (adminState.page < adminState.pages) { adminState.page++; loadUsers(); } });
@@ -496,6 +541,15 @@ function wire() {
   $('#nu-create').addEventListener('click', createUserFromForm);
   $('#set-test').addEventListener('click', testProxy);
   $('#admin-save').addEventListener('click', saveAdminSettings);
+  // audit log
+  $('#areload').addEventListener('click', loadAudit);
+  $('#aprev').addEventListener('click', () => { if (auditState.page > 1) { auditState.page--; loadAudit(); } });
+  $('#anext').addEventListener('click', () => { if (auditState.page < auditState.pages) { auditState.page++; loadAudit(); } });
+  $('#afilter').addEventListener('change', (e) => { auditState.action = e.target.value; auditState.page = 1; loadAudit(); });
+  $('#asearch').addEventListener('input', (e) => {
+    clearTimeout(searchTimerA);
+    searchTimerA = setTimeout(() => { auditState.q = e.target.value.trim(); auditState.page = 1; loadAudit(); }, 250);
+  });
   $('#pwd-cancel').addEventListener('click', closePwd);
   $('#pwd-save').addEventListener('click', savePwd);
   // history

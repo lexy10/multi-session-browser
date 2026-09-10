@@ -214,6 +214,7 @@ ipcMain.handle('admin:control:lockAll', adminCall(() => backend.lockAll()));
 ipcMain.handle('admin:control:unlockAll', adminCall(() => backend.unlockAll()));
 ipcMain.handle('admin:control:logoutUser', adminCall(({ id }) => backend.logoutUser(id)));
 ipcMain.handle('admin:history:user', adminCall(({ userId, params }) => backend.adminUserHistory(userId, params)));
+ipcMain.handle('admin:audit:list', adminCall((params) => backend.adminAudit(params)));
 
 // ---- Native menus ---------------------------------------------------------
 

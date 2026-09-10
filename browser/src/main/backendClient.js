@@ -95,6 +95,17 @@ function adminUserHistory(userId, params = {}) {
   return req('/history/user/' + userId + (s ? `?${s}` : ''));
 }
 
+// ---- admin: audit log ----
+function adminAudit(params = {}) {
+  const qs = new URLSearchParams();
+  if (params.page) qs.set('page', params.page);
+  if (params.limit) qs.set('limit', params.limit);
+  if (params.action) qs.set('action', params.action);
+  if (params.q) qs.set('q', params.q);
+  const s = qs.toString();
+  return req('/audit' + (s ? `?${s}` : ''));
+}
+
 // ---- admin: control ----
 function lockUser(id) { return req('/control/lock/' + id, { method: 'POST' }); }
 function unlockUser(id) { return req('/control/unlock/' + id, { method: 'POST' }); }
@@ -108,5 +119,6 @@ module.exports = {
   listUsers, createUser, updateUser, deleteUser,
   getSettings, updateSettings,
   lockUser, unlockUser, lockAll, unlockAll, logoutUser,
-  recordHistory, listMyHistory, deleteMyHistory, clearMyHistory, adminUserHistory
+  recordHistory, listMyHistory, deleteMyHistory, clearMyHistory, adminUserHistory,
+  adminAudit
 };
