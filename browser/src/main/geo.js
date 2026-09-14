@@ -26,6 +26,13 @@ const CITIES = [
   { key: 'nl-amsterdam',   label: 'Amsterdam, Netherlands', lat: 52.3676, lng: 4.9041,  tz: 'Europe/Amsterdam',   lang: 'nl-NL', decodo: { country: 'nl', city: 'amsterdam' } },
   { key: 'es-madrid',      label: 'Madrid, Spain',        lat: 40.4168,  lng: -3.7038,  tz: 'Europe/Madrid',      lang: 'es-ES', decodo: { country: 'es', city: 'madrid' } },
   { key: 'ca-toronto',     label: 'Toronto, Canada',      lat: 43.6532,  lng: -79.3832, tz: 'America/Toronto',    lang: 'en-CA', decodo: { country: 'ca', city: 'toronto' } },
+  // Canadian provinces — each with its own IANA timezone so IP region + tz agree.
+  // Decodo state tokens are US-only per their docs, so target CA cities by city.
+  // If your Decodo dashboard exposes a province token, add e.g. state: 'ca_alberta'.
+  { key: 'ca-calgary',     label: 'Calgary, Canada',      lat: 51.0447,  lng: -114.0719, tz: 'America/Edmonton',  lang: 'en-CA', decodo: { country: 'ca', city: 'calgary' } },
+  { key: 'ca-edmonton',    label: 'Edmonton, Canada',     lat: 53.5461,  lng: -113.4938, tz: 'America/Edmonton',  lang: 'en-CA', decodo: { country: 'ca', city: 'edmonton' } },
+  { key: 'ca-vancouver',   label: 'Vancouver, Canada',    lat: 49.2827,  lng: -123.1207, tz: 'America/Vancouver', lang: 'en-CA', decodo: { country: 'ca', city: 'vancouver' } },
+  { key: 'ca-montreal',    label: 'Montréal, Canada',     lat: 45.5019,  lng: -73.5674, tz: 'America/Toronto',    lang: 'fr-CA', decodo: { country: 'ca', city: 'montreal' } },
   { key: 'br-sao-paulo',   label: 'São Paulo, Brazil',    lat: -23.5505, lng: -46.6333, tz: 'America/Sao_Paulo',  lang: 'pt-BR', decodo: { country: 'br', city: 'sao_paulo' } },
   { key: 'mx-mexico-city', label: 'Mexico City, Mexico',  lat: 19.4326,  lng: -99.1332, tz: 'America/Mexico_City', lang: 'es-MX', decodo: { country: 'mx', city: 'mexico_city' } },
   { key: 'ae-dubai',       label: 'Dubai, UAE',           lat: 25.2048,  lng: 55.2708,  tz: 'Asia/Dubai',         lang: 'en-AE', decodo: { country: 'ae', city: 'dubai' } },

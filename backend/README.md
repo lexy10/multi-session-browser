@@ -60,3 +60,12 @@ Guards: `JwtAuthGuard` + `RolesGuard` with the `@Roles(Role.ADMIN)` decorator.
 - `/settings/effective` returns the Decodo password to authenticated clients because
   the browser runs the proxy relay locally and needs it. The browser's UI hides it
   from non-admins, but treat any client machine as able to hold that secret.
+
+## Admin recovery
+Forgot the only admin password? An admin can reset any other account from the app.
+For a full lockout use the break-glass CLI (needs DB/server access, not an API session):
+```bash
+npm run admin:reset -- --list
+npm run admin:reset -- --user admin --password 'NEW_STRONG_PASSWORD' [--create] [--unlock] [--make-admin]
+```
+On the droplet, prefix with `docker compose exec backend`. See [DEPLOY.md](DEPLOY.md).

@@ -73,6 +73,31 @@ On the droplet, in a folder with `docker-compose.prod.yml`, `Caddyfile`, `.env`:
 docker compose -f docker-compose.prod.yml up -d --build   # builds the image locally instead of pulling
 ```
 
+## Reset a forgotten admin password (break-glass)
+
+If an admin can still log in, reset anyone else's password from the app
+(Admin Console → Users). The command below is the recovery path for the case
+that has **no** working admin left — e.g. the only super-admin forgot their
+password. It changes the database directly, so it needs server access, not an
+API session (no new attack surface).
+
+On the droplet (run inside the backend container):
+```bash
+docker compose exec backend npm run admin:reset -- --list
+docker compose exec backend npm run admin:reset -- --user admin --password 'NEW_STRONG_PASSWORD'
+```
+Total lockout (no admin exists at all) — recreate one:
+```bash
+docker compose exec backend npm run admin:reset -- --user admin --password 'NEW_STRONG_PASSWORD' --create
+```
+Also `--unlock` (clear a lock + re-activate) and `--make-admin` (grant ADMIN).
+Omit `--password` to be prompted for it (hidden), or pass it via
+`-e ADMIN_RESET_PASSWORD=…` so it stays out of shell history. Every reset is
+written to the audit log. Change the password again from the app afterwards.
+
+> **Tip:** keep **at least two admin accounts** so day-to-day resets stay in the
+> app and this break-glass is only ever a last resort.
+
 ## Backups (Postgres)
 ```bash
 docker exec mpb-db pg_dump -U mpb mpb > mpb-$(date +%F).sql       # add to cron

@@ -340,7 +340,7 @@ async function loadSettings() {
   const s = r.data;
   $('#set-username').value = s.username || '';
   $('#set-password').value = '';
-  $('#set-password').placeholder = s.hasPassword ? '•••••• (unchanged)' : 'proxy password';
+  $('#set-password').placeholder = s.hasPassword ? '•••••• (unchanged)' : '';
   $('#set-endpoint').value = s.endpoint || 'gate.decodo.com:7000';
   $('#set-duration').value = s.sessionDuration || 30;
   $('#set-country').value = s.autoCountry || '';

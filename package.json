@@ -15,7 +15,8 @@
     "prisma:migrate": "npm --prefix backend run prisma:migrate",
     "prisma:generate": "npm --prefix backend run prisma:generate",
     "prisma:studio": "npm --prefix backend run prisma:studio",
-    "db:seed": "npm --prefix backend run db:seed"
+    "db:seed": "npm --prefix backend run db:seed",
+    "admin:reset": "npm --prefix backend run admin:reset --"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

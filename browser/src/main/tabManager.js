@@ -8,7 +8,15 @@ const fingerprint = require('./fingerprint');
 const store = require('./store');
 const remoteConfig = require('./remoteConfig');
 
-const CHROME_UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${process.versions.chrome} Safari/537.36`;
+// Default session UA must match the host OS: a Mac claiming Windows here (and on
+// Direct tabs, which are meant to be the genuine machine) is an easy spoof tell.
+const CHROME_UA = (() => {
+  const v = process.versions.chrome;
+  const os = process.platform === 'darwin'
+    ? 'Macintosh; Intel Mac OS X 10_15_7'
+    : 'Windows NT 10.0; Win64; x64';
+  return `Mozilla/5.0 (${os}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${v} Safari/537.36`;
+})();
 const NEW_TAB_URL = 'https://ipinfo.io/json';
 const IP_CHECK_URL = 'https://ipinfo.io/json';
 
@@ -683,7 +691,7 @@ function errorPageHtml(code, desc, url) {
   const safeUrl = escapeHtml(url || '');
   const safeDesc = escapeHtml(desc || 'The page could not be loaded.');
   const hint = /PROXY|TUNNEL|TIMED_OUT|CONNECTION/i.test(desc || '')
-    ? 'The proxy refused the connection — most often because the Decodo data plan is used up, or the credentials/session are invalid. Check your Decodo balance, or right-click this tab → “Switch to Direct (no proxy)” to load it on your real connection.'
+    ? 'The connection was refused upstream — most often because the data plan is used up, or the access credentials/session are invalid. Check with your admin, or right-click this tab → “Switch to Direct” to load it on your real connection.'
     : 'Check the address and your connection, then try again.';
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
 <style>
