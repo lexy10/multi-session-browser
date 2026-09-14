@@ -81,19 +81,26 @@ that has **no** working admin left — e.g. the only super-admin forgot their
 password. It changes the database directly, so it needs server access, not an
 API session (no new attack surface).
 
-On the droplet (run inside the backend container):
+On the droplet, a helper script (`~/reset-password.sh`, shipped by the deploy
+pipeline alongside the compose file) wraps the whole thing:
 ```bash
-docker compose exec backend npm run admin:reset -- --list
-docker compose exec backend npm run admin:reset -- --user admin --password 'NEW_STRONG_PASSWORD'
+./reset-password.sh --list                          # see accounts, changes nothing
+./reset-password.sh 'NEW_STRONG_PASSWORD'           # reset user "admin"
+./reset-password.sh 'NEW_STRONG_PASSWORD' someuser  # reset a specific user
+./reset-password.sh 'NEW_STRONG_PASSWORD' admin --create   # recreate on total lockout
+./reset-password.sh 'NEW_STRONG_PASSWORD' admin --unlock   # also clear a lock
 ```
-Total lockout (no admin exists at all) — recreate one:
+It prints a clear ✔/✖ and exits non-zero on failure.
+
+Or run the underlying command directly:
 ```bash
-docker compose exec backend npm run admin:reset -- --user admin --password 'NEW_STRONG_PASSWORD' --create
+docker compose -f docker-compose.prod.yml exec backend npm run admin:reset -- --list
+docker compose -f docker-compose.prod.yml exec backend npm run admin:reset -- --user admin --password 'NEW_STRONG_PASSWORD'
 ```
-Also `--unlock` (clear a lock + re-activate) and `--make-admin` (grant ADMIN).
-Omit `--password` to be prompted for it (hidden), or pass it via
-`-e ADMIN_RESET_PASSWORD=…` so it stays out of shell history. Every reset is
-written to the audit log. Change the password again from the app afterwards.
+Flags: `--create`, `--unlock` (clear a lock + re-activate), `--make-admin`.
+Every reset is written to the audit log. The password is passed as an argument,
+so prefix the command with a space to keep it out of shell history, and change
+it again from the app afterwards.
 
 > **Tip:** keep **at least two admin accounts** so day-to-day resets stay in the
 > app and this break-glass is only ever a last resort.

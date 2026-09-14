@@ -64,7 +64,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: "backend/docker-compose.prod.yml,backend/Caddyfile"
+          source: "backend/docker-compose.prod.yml,backend/Caddyfile,backend/reset-password.sh"
           target: "~"
           strip_components: 1   # drop the "backend/" prefix -> ~/docker-compose.prod.yml
 
@@ -76,6 +76,7 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             set -e
+            chmod +x reset-password.sh 2>/dev/null || true
             export BACKEND_IMAGE=${{ env.IMAGE }}:latest
             docker compose -f docker-compose.prod.yml pull backend
             docker compose -f docker-compose.prod.yml up -d
