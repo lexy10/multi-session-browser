@@ -95,7 +95,9 @@ async function applyAuthenticated(user) {
     const cfg = await backend.getEffectiveSettings();
     remoteConfig.set(cfg);
     tabManager.setDataSaver(cfg.dataSaver || 'balanced');
-    locked = Boolean(user.locked || cfg.globalLock);
+    // Admins are never locked — matches the realtime gateway, so "Lock all"
+    // (or an account lock) can never strand an admin out of their own console.
+    locked = user.role !== 'ADMIN' && Boolean(user.locked || cfg.globalLock);
   } catch (e) {
     console.error('[main] could not load settings:', e.message);
   }
