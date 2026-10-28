@@ -5,3 +5,9 @@
 	encode zstd gzip
 	reverse_proxy backend:3000
 }
+
+# SMS console (repo lexy10/sms-console). Its container joins this stack's network as "sms-console".
+# No `encode` here: the app compresses its own responses, and its live-update stream must not be buffered.
+goooolor.link {
+	reverse_proxy sms-console:3000
+}

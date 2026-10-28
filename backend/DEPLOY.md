@@ -112,6 +112,8 @@ docker exec mpb-db pg_dump -U mpb mpb > mpb-$(date +%F).sql       # add to cron
 ```
 
 ## Notes
+- The same Caddy also serves the SMS console at `goooolor.link` (repo `lexy10/sms-console`, deployed
+  separately into `~/sms-console`). Its site block is in `Caddyfile`; it has its own database in this Postgres.
 - Postgres has **no host port** exposed — only the backend reaches it over the compose network.
 - Only 22/80/443 are open. Keep `~/.env` secret.
 - REST + WebSocket both run on 3000 behind Caddy; `wss://api.yourdomain.com` works out of the box.
