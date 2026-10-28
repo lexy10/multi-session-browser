@@ -5,3 +5,7 @@
 	encode zstd gzip
 	reverse_proxy backend:3000
 }
+
+# Sites for other apps on this droplet. Each app's own deploy puts its *.caddy file in ~/caddy-sites and
+# reloads Caddy; an empty folder is fine.
+import /etc/caddy/sites/*.caddy

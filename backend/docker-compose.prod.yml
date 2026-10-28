@@ -46,6 +46,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-sites:/etc/caddy/sites:ro   # other apps' site files (see Caddyfile)
       - caddy_data:/data
       - caddy_config:/config
 
