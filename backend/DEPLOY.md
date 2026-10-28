@@ -112,6 +112,9 @@ docker exec mpb-db pg_dump -U mpb mpb > mpb-$(date +%F).sql       # add to cron
 ```
 
 ## Notes
+- Caddy also serves other apps' domains: it loads any `*.caddy` file in `~/caddy-sites`. Each app's own
+  deploy installs its file there and runs `docker exec mpb-caddy caddy reload --config /etc/caddy/Caddyfile`.
+  Nothing in this repo needs to change to add or remove such a site.
 - Postgres has **no host port** exposed — only the backend reaches it over the compose network.
 - Only 22/80/443 are open. Keep `~/.env` secret.
 - REST + WebSocket both run on 3000 behind Caddy; `wss://api.yourdomain.com` works out of the box.

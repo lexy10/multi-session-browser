@@ -77,7 +77,15 @@ jobs:
           script: |
             set -e
             chmod +x reset-password.sh 2>/dev/null || true
+            mkdir -p caddy-sites
             export BACKEND_IMAGE=${{ env.IMAGE }}:latest
             docker compose -f docker-compose.prod.yml pull backend
             docker compose -f docker-compose.prod.yml up -d
+            # Caddyfile is bind-mounted, so Caddy doesn't see edits on its own. If the container still has
+            # the old file (the copy replaced it), restart it; otherwise reload the config without downtime.
+            if [ "$(sha256sum < Caddyfile)" != "$(docker exec mpb-caddy sh -c 'sha256sum < /etc/caddy/Caddyfile')" ]; then
+              docker restart mpb-caddy
+            else
+              docker exec mpb-caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+            fi
             docker image prune -f
